@@ -14,15 +14,35 @@ const leftToRight = keyframes`
   from {
     left: -100px;
   }
+  50% {
+    left: 50%;
+  }
   to {
-    left: 100%;
+    left: -100px;
+  }
+`
+
+const leftToRightMobile = keyframes`
+  from {
+    left: -100px;
+  }
+  50% {
+    left: 25%;
+  }
+  to {
+    left: -100px;
   }
 `
 
 const ImageContainer = styled.div`
   position: absolute;
   left: 0px;
-  animation: ${spin} 1s linear infinite, ${leftToRight} 5s ease-in-out infinite;
+  animation: ${spin} 1s linear infinite, ${leftToRight} 8s ease-in-out infinite;
+
+  @media only screen and (max-width: 480px) {
+    animation: ${spin} 1s linear infinite,
+      ${leftToRightMobile} 5s ease-in-out infinite;
+  }
 `
 
 const RollingBallImage: React.FC = () => {
@@ -35,7 +55,6 @@ const RollingBallImage: React.FC = () => {
         width='180px'
         height='180px'
         objectFit='contain'
-        className='sr-image'
       />
     </ImageContainer>
   )
