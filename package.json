@@ -11,6 +11,8 @@
     "start": "next start -p 8092"
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
+    "firebase-admin": "^9.11.0",
     "goods-core": "^1.6.15",
     "next": "10.0.4",
     "react": "17.0.1",

@@ -1,11 +1,17 @@
 const withPWA = require('next-pwa')
+const env = require('dotenv').config().parsed
+
+const generateServiceAccount = require('./scripts/generate-service-account')
 const pkg = require('./package.json')
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+generateServiceAccount()
+
 const baseConfig = withBundleAnalyzer({
+  env,
   images: {
     domains: ['raw.githubusercontent.com', 'github.githubassets.com'],
   },

@@ -3,6 +3,7 @@ import { GetServerSideProps, NextPage } from 'next'
 
 import Layout from 'components/layout'
 import RollingBallImage from 'components/rolling-ball-image'
+import { AdminRemoteConfig } from 'services/firebase'
 
 type Props = {
   redirectedLink: string
@@ -34,7 +35,7 @@ export default LinkSlugPage
 export const getServerSideProps: GetServerSideProps<Props, Query> = async ({
   params,
 }) => {
-  const { default: links } = await import('constants/links')
+  const links = await AdminRemoteConfig.getLinks()
   const { slug } = params
   const link = links[slug]
 
