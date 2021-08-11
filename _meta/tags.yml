@@ -5,3 +5,7 @@ tags:
     name: Frontend
   - slug: nextjs
     name: Next.js
+  - slug: typescript
+    name: TypeScript
+  - slug: js
+    name: JavaScript
