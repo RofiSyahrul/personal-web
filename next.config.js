@@ -15,6 +15,15 @@ const baseConfig = withBundleAnalyzer({
   images: {
     domains: ['raw.githubusercontent.com', 'github.githubassets.com'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/admin',
+        destination: '/admin/index.html',
+        permanent: false,
+      },
+    ]
+  },
   webpack(config, { webpack }) {
     config.module.rules.push({
       test: /\.(woff|woff2|eot|ttf|otf)$/,
