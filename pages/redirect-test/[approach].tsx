@@ -3,7 +3,7 @@ import { Box } from 'goods-core'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-type Approach = 'hidden-anchor' | 'dummy-anchor'
+type Approach = 'hidden-anchor' | 'dummy-anchor' | 'window-location'
 
 type Param = {
   approach: Approach
@@ -16,6 +16,7 @@ type Props = Param & {
 const mapAproach: Record<Approach, string> = {
   'hidden-anchor': 'Hidden Anchor Approach',
   'dummy-anchor': 'Dummy Anchor Approach',
+  'window-location': 'Window Location Approach',
 }
 
 const href = 'https://google.com'
@@ -30,12 +31,17 @@ function executeDummyAnchor() {
   link.remove()
 }
 
+function executeWindowLocation() {
+  window.location.href = href
+}
+
 export const getStaticPaths: GetStaticPaths<Param> = () => {
   return Promise.resolve({
     fallback: false,
     paths: [
       { params: { approach: 'dummy-anchor' } },
       { params: { approach: 'hidden-anchor' } },
+      { params: { approach: 'window-location' } },
     ],
   })
 }
@@ -50,7 +56,7 @@ export const getStaticProps: GetStaticProps<Props, Param> = ({ params }) => {
   })
 }
 
-const TargetBlankTest: React.FC<Props> = ({ approach, approachText }) => {
+const RedirectTest: React.FC<Props> = ({ approach, approachText }) => {
   const anchorRef = useRef<HTMLAnchorElement>(null)
   const [isClicked, setIsClicked] = useState(false)
 
@@ -62,14 +68,16 @@ const TargetBlankTest: React.FC<Props> = ({ approach, approachText }) => {
         anchorRef.current.click()
       } else if (approach === 'dummy-anchor') {
         executeDummyAnchor()
+      } else if (approach === 'window-location') {
+        executeWindowLocation()
       }
     }
   }, [isClicked, approach])
 
   return (
     <Layout
-      title='Target Blank Test'
-      description={`A test page for target blank with ${approachText}`}
+      title='Redirect Test'
+      description={`A test page for redirection with ${approachText}`}
       image='https://avatars.githubusercontent.com/u/44445726?v=4'
       w
       minH='100vh'
@@ -106,4 +114,4 @@ const TargetBlankTest: React.FC<Props> = ({ approach, approachText }) => {
   )
 }
 
-export default TargetBlankTest
+export default RedirectTest
