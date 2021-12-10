@@ -3,6 +3,7 @@ import { Box, Spinner } from 'goods-core'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { useRouter } from 'next/dist/client/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import browser from 'utils/browser'
 
 type Approach = 'hidden-anchor' | 'dummy-anchor' | 'window-location'
 
@@ -25,7 +26,7 @@ const href = 'https://google.com'
 function executeDummyAnchor(isTargetBlank: boolean) {
   const link = document.createElement('a')
   link.href = href
-  link.target = isTargetBlank ? '_blank' : '_self'
+  link.target = isTargetBlank && !browser.isSafari ? '_blank' : '_self'
   link.rel = 'noopener noreferrer'
   document.body.appendChild(link)
   link.click()
@@ -123,7 +124,7 @@ const RedirectTest: React.FC<Props> = ({ approach, approachText }) => {
       {approach === 'hidden-anchor' && (
         <a
           href={href}
-          target={isTargetBlank ? '_blank' : '_self'}
+          target={isTargetBlank && !browser.isSafari ? '_blank' : '_self'}
           rel='noopener noreferrer'
           ref={anchorRef}
           style={{ visibility: 'hidden', height: 0, width: 0 }}
