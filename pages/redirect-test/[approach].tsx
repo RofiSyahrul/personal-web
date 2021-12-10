@@ -1,6 +1,7 @@
 import Layout from 'components/layout'
-import { Box } from 'goods-core'
+import { Box, Spinner } from 'goods-core'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useRouter } from 'next/dist/client/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 type Approach = 'hidden-anchor' | 'dummy-anchor' | 'window-location'
@@ -21,10 +22,10 @@ const mapAproach: Record<Approach, string> = {
 
 const href = 'https://google.com'
 
-function executeDummyAnchor() {
+function executeDummyAnchor(isTargetBlank: boolean) {
   const link = document.createElement('a')
   link.href = href
-  link.target = '_blank'
+  link.target = isTargetBlank ? '_blank' : '_self'
   link.rel = 'noopener noreferrer'
   document.body.appendChild(link)
   link.click()
@@ -59,20 +60,38 @@ export const getStaticProps: GetStaticProps<Props, Param> = ({ params }) => {
 const RedirectTest: React.FC<Props> = ({ approach, approachText }) => {
   const anchorRef = useRef<HTMLAnchorElement>(null)
   const [isClicked, setIsClicked] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleClickButton = useCallback(() => setIsClicked(true), [])
+  const { query } = useRouter()
+  const experiments = (query.experiment?.toString?.() ?? '').split(',')
+  const isTargetBlank = experiments.includes('targetBlank')
+  const delay = Number(query.delay?.toString?.() || '2000')
+
+  const handleClickButton = useCallback(() => {
+    if (experiments.includes('delay')) {
+      setIsLoading(true)
+      setTimeout(() => {
+        setIsClicked(true)
+        setIsLoading(false)
+      }, delay)
+      return
+    }
+
+    setIsClicked(true)
+  }, [experiments, delay])
 
   useEffect(() => {
     if (isClicked) {
       if (anchorRef.current && approach === 'hidden-anchor') {
         anchorRef.current.click()
       } else if (approach === 'dummy-anchor') {
-        executeDummyAnchor()
+        executeDummyAnchor(isTargetBlank)
       } else if (approach === 'window-location') {
         executeWindowLocation()
       }
+      setIsClicked(false)
     }
-  }, [isClicked, approach])
+  }, [isClicked, approach, isTargetBlank])
 
   return (
     <Layout
@@ -86,6 +105,7 @@ const RedirectTest: React.FC<Props> = ({ approach, approachText }) => {
     >
       <Box
         as='button'
+        fDir='row'
         bg='blue50'
         c='white20'
         p='xs'
@@ -97,12 +117,13 @@ const RedirectTest: React.FC<Props> = ({ approach, approachText }) => {
         }}
         onClick={handleClickButton}
       >
+        {isLoading && <Spinner c='white30' s={16} mr='xs' />}
         Click here
       </Box>
       {approach === 'hidden-anchor' && (
         <a
           href={href}
-          target='_blank'
+          target={isTargetBlank ? '_blank' : '_self'}
           rel='noopener noreferrer'
           ref={anchorRef}
           style={{ visibility: 'hidden', height: 0, width: 0 }}
